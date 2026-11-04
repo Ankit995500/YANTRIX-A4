@@ -1,0 +1,4 @@
+sku,barcode,name,category,quantity,location
+SKU-1001,890100000001,Sample Box A,Packaging,24,A-01
+SKU-1002,890100000002,Sample Box B,Packaging,12,A-02
+SKU-2001,890100000003,Sensor Module,Electronics,8,B-01

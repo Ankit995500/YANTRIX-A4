@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YANTRIX A4 | Command Center</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#top"><span class="brand-mark">Y<span>A</span></span><span><strong>YANTRIX <em>A4</em></strong><small>AI-POWERED AUTONOMOUS WAREHOUSE ROBOT</small></span></a>
+  <div class="top-tagline">Every SKU. Every Move. <b>Engineered to Think.</b></div>
+  <div class="connection"><i id="connectionDot"></i><span><b id="connectionText">ESP32 Offline / Demo</b><small id="clock">Waiting for status…</small></span></div>
+</header>
+<main class="shell" id="top">
+  <aside class="panel sidebar">
+    <div class="section-title"><span class="tiny-label">PLATFORM</span><h2>Robot Information</h2></div>
+    <div class="robot-card">
+      <img src="{{ url_for('static', filename='images/robot.png') }}" alt="YANTRIX A4 warehouse robot" class="robot-image" onerror="this.style.display='none';document.getElementById('imageFallback').style.display='grid'">
+      <div id="imageFallback" class="image-fallback" style="display:none"><span>YA</span><b>YANTRIX A4</b><small>Warehouse Robotics Platform</small></div>
+      <div class="robot-caption"><b>YANTRIX A4</b><span>Warehouse Robotics Platform</span></div>
+    </div>
+    <dl class="spec-list">
+      <div><dt>Controller</dt><dd>ESP32 Dev Module</dd></div><div><dt>Motor driver</dt><dd>L298N</dd></div>
+      <div><dt>Drive system</dt><dd>4WD · 4 DC motors</dd></div><div><dt>Navigation</dt><dd>Front / rear ultrasonic</dd></div>
+      <div><dt>Vision</dt><dd>Laptop webcam + YOLO</dd></div><div><dt>Identification</dt><dd>SKU / barcode scanner</dd></div>
+      <div><dt>Environment</dt><dd>DHT22 temperature / humidity</dd></div><div><dt>Connectivity</dt><dd>Wi-Fi + Flask</dd></div>
+    </dl>
+    <div class="chips"><span>AI VISION</span><span>SKU SCAN</span><span>4WD DRIVE</span></div>
+    <div class="sidebar-note"><span class="pulse"></span><div><b>Safety first</b><small>Motor controls are demo-only until the ESP32 bridge is connected.</small></div></div>
+  </aside>
+  <section class="main-content">
+    <section class="panel hero">
+      <div class="hero-copy"><div class="eyebrow"><span></span> AUTONOMOUS FLEET / UNIT 01</div><h1>Command Center</h1><p>Monitor, identify, and coordinate warehouse activity.</p>
+        <div class="quick-stats"><div><small>Robot mode</small><b id="robotMode">IDLE</b></div><div><small>Motor status</small><b id="motorStatus">STOP</b></div><div><small>SKU catalog</small><b id="productCount">0</b></div></div>
+      </div><div class="hero-orb"><div class="orb-inner">YA<small>4</small></div><span>INTELLIGENCE IN MOTION</span></div>
+    </section>
+    <div class="section-title metrics-title"><span class="tiny-label">LIVE TELEMETRY</span><h2>System Overview</h2></div>
+    <section class="sensor-grid">
+      <article class="metric"><div class="metric-top"><span class="metric-icon amber">↕</span><small>FRONT DISTANCE</small></div><b id="frontDistance">— cm</b><span>Ultrasonic sensor</span></article>
+      <article class="metric"><div class="metric-top"><span class="metric-icon blue">↕</span><small>REAR DISTANCE</small></div><b id="rearDistance">— cm</b><span>Ultrasonic sensor</span></article>
+      <article class="metric"><div class="metric-top"><span class="metric-icon coral">°</span><small>TEMPERATURE</small></div><b id="temperature">— °C</b><span>DHT22 sensor</span></article>
+      <article class="metric"><div class="metric-top"><span class="metric-icon mint">≈</span><small>HUMIDITY</small></div><b id="humidity">— %</b><span>DHT22 sensor</span></article>
+      <article class="metric"><div class="metric-top"><span class="metric-icon violet">◉</span><small>FRONT IR SENSOR</small></div><b id="frontIR">—</b><span>Obstacle input</span></article>
+      <article class="metric"><div class="metric-top"><span class="metric-icon violet">◉</span><small>REAR IR SENSOR</small></div><b id="rearIR">—</b><span>Obstacle input</span></article>
+      <article class="metric"><div class="metric-top"><span class="metric-icon mint">ϟ</span><small>BATTERY VOLTAGE</small></div><b id="batteryVoltage">— V</b><span>Telemetry required</span></article>
+      <article class="metric"><div class="metric-top"><span class="metric-icon blue">⌁</span><small>WI-FI SIGNAL</small></div><b id="wifiSignal">— dBm</b><span>Telemetry required</span></article>
+    </section>
+    <section class="feature-grid">
+      <article class="panel feature-card vision-card"><div class="card-heading"><div><span class="tiny-label">COMPUTER VISION</span><h2>Laptop Webcam · Object Detection</h2></div><span class="badge">VISION</span></div>
+        <div class="video-frame"><video id="webcam" autoplay muted playsinline></video><div class="video-placeholder" id="videoPlaceholder"><span class="camera-symbol">◉</span><b>Camera preview</b><small>Start webcam to display live video</small></div><span class="live-pill"><i></i> LIVE PREVIEW</span></div>
+        <div class="button-row"><button id="startWebcam" class="primary-btn">▶ Start Webcam</button><button id="stopWebcam" class="secondary-btn">■ Stop</button></div>
+        <div class="form-row"><input id="objectLabel" placeholder="Detected object label"><input id="objectConfidence" type="number" min="0" max="1" step=".01" placeholder="Confidence 0–1"><button id="logDetection" class="outline-btn">Log Detection</button></div>
+        <p id="webcamMessage" class="hint">Webcam preview only. Automatic YOLO detection requires connecting your existing ai_detection.py.</p>
+      </article>
+      <article class="panel feature-card barcode-card"><div class="card-heading"><div><span class="tiny-label">INVENTORY INTELLIGENCE</span><h2>SKU / Barcode Scanner</h2></div><span class="badge">INVENTORY</span></div>
+        <div class="barcode-art"><div class="barcode-lines">▌▏▌▌ ▏▌▏▌▌▏ ▌▏▌</div><b>SCAN PRODUCT IDENTIFIER</b><small>Type a barcode or use a USB scanner</small></div>
+        <div class="form-row"><input id="barcodeInput" placeholder="Enter SKU or barcode"><button id="lookupBarcode" class="primary-btn">Lookup</button></div>
+        <button id="scanWithCamera" class="secondary-btn full-width">◎ Scan with Webcam</button>
+        <div id="barcodeResult" class="result-box">No code scanned yet.</div>
+      </article>
+      <article class="panel feature-card"><div class="card-heading"><div><span class="tiny-label">WAREHOUSE STOCK</span><h2>Product Catalog</h2></div><span class="badge">CSV DATA</span></div>
+        <input id="productSearch" class="search-input" placeholder="⌕  Search SKU, barcode, product name…"><div id="productList" class="product-list">Loading products…</div><p class="hint">Update <code>data/products.csv</code> to add inventory items.</p>
+      </article>
+      <article class="panel feature-card"><div class="card-heading"><div><span class="tiny-label">MANUAL OVERRIDE</span><h2>Robot Control Panel</h2></div><span class="badge warning">BRIDGE REQUIRED</span></div>
+        <div class="control-grid"><button data-command="FORWARD" class="primary-btn">▲ Forward</button><button data-command="STOP" class="stop-btn">■ Stop</button><button data-command="LEFT" class="secondary-btn">◀ Left</button><button data-command="RIGHT" class="secondary-btn">Right ▶</button><button data-command="BACKWARD" class="secondary-btn">▼ Backward</button><button data-command="AUTO" class="auto-btn">◎ Auto Mode</button></div>
+        <p class="hint">These buttons log requests only. They do not move motors until a tested ESP32 command bridge is added. Keep a physical emergency stop.</p><div class="last-command"><span>Last requested command</span><b id="lastCommand">None</b></div>
+      </article>
+    </section>
+    <div class="section-title chart-title"><span class="tiny-label">PERFORMANCE HISTORY</span><h2>Sensor Analytics</h2></div>
+    <section class="chart-grid"><article class="panel chart-card"><h3>Front Distance <small>cm</small></h3><div class="chart-wrap"><canvas id="frontChart"></canvas></div></article><article class="panel chart-card"><h3>Rear Distance <small>cm</small></h3><div class="chart-wrap"><canvas id="rearChart"></canvas></div></article><article class="panel chart-card"><h3>Temperature <small>°C</small></h3><div class="chart-wrap"><canvas id="temperatureChart"></canvas></div></article><article class="panel chart-card"><h3>Humidity <small>%</small></h3><div class="chart-wrap"><canvas id="humidityChart"></canvas></div></article><article class="panel chart-card"><h3>Robot Speed <small>%</small></h3><div class="chart-wrap"><canvas id="speedChart"></canvas></div></article></section>
+    <section class="bottom-grid"><article class="panel feature-card"><div class="card-heading"><div><span class="tiny-label">RECENT EVENTS</span><h2>Robot Activity Log</h2></div><button id="clearEvents" class="secondary-btn">Clear log</button></div><div id="eventList" class="event-list">Waiting for events…</div></article>
+      <article class="panel feature-card"><div class="card-heading"><div><span class="tiny-label">SYSTEM HEALTH</span><h2>System Integration</h2></div><span class="badge">STATUS</span></div><div class="system-row"><span>Flask dashboard</span><b class="good">RUNNING</b></div><div class="system-row"><span>ESP32 telemetry</span><b id="esp32Integration" class="warning-text">OFFLINE</b></div><div class="system-row"><span>SKU catalog</span><b class="good">CSV READY</b></div><div class="system-row"><span>YOLO inference</span><b class="warning-text">NOT CONNECTED</b></div><div class="system-row"><span>Browser barcode API</span><b id="barcodeIntegration" class="warning-text">CHECKING</b></div></article>
+    </section>
+    <footer><b>YANTRIX A4</b><span>Every SKU. Every Move. Engineered to Think.</span><small>Live sensor values require ESP32 telemetry.</small></footer>
+  </section>
+</main>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>const v=document.getElementById('webcam'), p=document.getElementById('videoPlaceholder'); if(v&&p){v.addEventListener('playing',()=>p.style.display='none');v.addEventListener('emptied',()=>p.style.display='grid');}</script>
+</body></html>
